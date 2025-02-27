@@ -17,9 +17,6 @@ runs:
     image: "Dockerfile"
 
 
-run:
-  using: "rust"
-  main: "target/release/fibbot"
 
 
 
