@@ -37,7 +37,7 @@ fn fibo_calulator() {
 
 fn params() {
     let args: Vec<String> = env::args().collect();
-    if args.len() > 3 {
+    if args.len() < 3 {
         eprintln!("Usage: <enable_fibbot> <max_threshold>");
         std::process::exit(1);
     }
