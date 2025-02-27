@@ -1,4 +1,10 @@
 name: fibbot input action
+
+runs:
+  steps:
+  - name: "Build image"
+    using: "docker"
+    image: "Dockerfile"
 description: "an action that takes parameters and inputs"
 inputs:
   enable_fib:
@@ -10,11 +16,6 @@ inputs:
     required:  true
     default: "100"
 
-runs:
-  steps:
-  - name: "Build image"
-    using: "docker"
-    image: "Dockerfile"
 
 
 
