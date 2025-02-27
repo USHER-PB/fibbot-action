@@ -1,43 +1,25 @@
 name: fibbot input action
 
-runs:
-  steps:
-  - name: "Build image"
-    using: "docker"
-    image: "Dockerfile"
-description: "an action that takes parameters and inputs"
+description: "An action that takes parameters and inputs"
+
 inputs:
   enable_fib:
     description: "Enable if the fibo calculation should take place or not"
-    required:  true
+    required: true
     default: "false"
-  Max_threshold: 
+  Max_threshold:
     description: "Set a max value to which the fibo calculation is supposed to stop"
-    required:  true
+    required: true
     default: "100"
 
+runs:
+  using: "docker"  # Specify the runtime environment
+  image: "Dockerfile"  # Specify the Dockerfile for building the image
+  steps:
+    - name: "Build image"
+      run: |
+        docker build -t fibbot .  # Build the Docker image from the Dockerfile
 
-
-
-
-
-# name: fibbot input action
-
-# on: [push]  # Specify the event that triggers the action
-
-# inputs:
-#   enable_fib:
-#     description: "Enable if the fibo calculation should take place or not"
-#     required: true
-#     default: "false"
-#   Max_threshold:
-#     description: "Set a max value to which the fibo calculation is supposed to stop"
-#     required: true
-#     default: "100"
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest  # Specify the runner
-#     steps:
-#       - name: "Build image"
-#         uses: do
+    - name: "Run Fibo Calculation"
+      run: |
+        docker run fibbot ./target/release/fibbot  # Run the compiled binary inside the Docker container
