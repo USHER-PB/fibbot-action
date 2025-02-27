@@ -31,10 +31,8 @@ fn fibo_calculator(max_threshold: u128) {
 
 fn params() {
     let args: Vec<String> = env::args().collect();
-    if args.len() < 3 {
-        eprintln!("Usage: <enable_fibbot> <max_threshold>");
-        std::process::exit(1);
-    }
+    if args.len() == 3 {
+    
     let enable_fibbot = &args[1];
    
     let enable_fibbot: bool = enable_fibbot
@@ -50,8 +48,9 @@ fn params() {
     .trim()
     .parse()
     .expect("Expected a positive integer for max threshold.");
-
+    
     fibo_calculator(max_threshold);
+    }
 }
     else {
         // enable_fibbot == false;
