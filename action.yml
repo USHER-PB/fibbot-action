@@ -9,7 +9,7 @@ inputs:
     default: "false"
   Max_threshold:
     description: "Set a max value to which the fibo calculation is supposed to stop"
-    required: true
+    required: "100"
     default: "100"
 
 runs:
