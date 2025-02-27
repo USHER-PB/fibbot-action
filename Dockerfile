@@ -22,4 +22,4 @@ RUN apt-get clean ; apt-get update ; apt-get install -y libc6 ; rm -rf /var/lib/
 COPY --from=builder /usr/src/fibbot/target/release/fibbot /usr/local/bin/fibbot
 
 # Set the entrypoint
-CMD ["/usr/local/bin/fibbot"]
+ENTRYPOINT ["/usr/local/bin/fibbot"]
