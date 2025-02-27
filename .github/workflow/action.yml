@@ -1,0 +1,31 @@
+name: Hello World
+
+on:
+  push:  # Trigger this workflow on push events
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4  # Check out the repository code
+
+      - name: Run Hello World
+        run: echo "Hello world"
+
+# name: fibbot input actions
+# description: "an action that takes parameters and inputs"
+# inputs:
+#   enable_fib:
+#     description: "Enable if the fibo calculation should take place or not"
+#     required:  true
+#     default: "false"
+#   Max_threshold: 
+#     description: "Set a max value to which the fibo calculation is supposed to stop"
+#     require value:  true
+#     default value: "100"
+
+# run:
+#   using: "rust"
+#   main: "target/release/fibbot"
