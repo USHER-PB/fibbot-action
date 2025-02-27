@@ -82,10 +82,6 @@ fn params() {
             let number = max_threshold;
             fibo_calculator(max_threshold,number);
         }
-    } else {
-        // enable_fibbot == false;
-        // println!("{}", enable_fibbot);
-        println!("the boolean you place is not valid")
     }
 }
 // if max_threshold > number{
