@@ -1,6 +1,6 @@
 use std::{env, io};
 
-fn fibo_calulator() {
+fn fibo_calculator(max_threshold: u128) {
   
 
     let mut number = String::new();
@@ -17,12 +17,6 @@ fn fibo_calulator() {
     let mut a: u128 = 0;
     let mut b: u128 = 1;
 
-    let args: Vec<String> = env::args().collect();
-    let max_threshold = &args[2];
-    let max_threshold: u128 = max_threshold
-        .trim()
-        .parse()
-        .expect("expected boolean found string");
 
     for i in 2..=number {
         let pre_fib = a + b;
@@ -50,14 +44,22 @@ fn params() {
     
     if enable_fibbot == true {
         println!("welcome to our fibo calculator");
-        fibo_calulator();
-    } else {
+       
+    
+    let max_threshold: u128 = args[2]
+    .trim()
+    .parse()
+    .expect("Expected a positive integer for max threshold.");
+
+    fibo_calculator(max_threshold);
+}
+    else {
         // enable_fibbot == false;
         // println!("{}", enable_fibbot);
            println!("the boolean you place is not valid")
-
+ 
     }
-    }
+}
     // if max_threshold > number{
     //     let input = fibo_calulator();
     //     println!("{:?}", input)
