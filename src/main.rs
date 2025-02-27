@@ -31,7 +31,7 @@ fn fibo_calculator(max_threshold: u128) {
 
 fn params() {
     let args: Vec<String> = env::args().collect();
-    if args.len() == 3 {
+    if args.len() == 2 {
     
     let enable_fibbot = &args[1];
    
