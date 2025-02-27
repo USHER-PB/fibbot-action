@@ -20,6 +20,3 @@ runs:
       run: |
         docker build -t fibbot .  # Build the Docker image from the Dockerfile
 
-    - name: "Run Fibo Calculation"
-      run: |
-        docker run fibbot ./target/release/fibbot  # Run the compiled binary inside the Docker container
