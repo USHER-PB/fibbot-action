@@ -15,8 +15,5 @@ inputs:
 runs:
   using: "docker"  # Specify the runtime environment
   image: "Dockerfile"  # Specify the Dockerfile for building the image
-  steps:
-    - name: "Build image"
-      run: |
-        docker build -t fibbot .  # Build the Docker image from the Dockerfile
+
 
