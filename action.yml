@@ -3,7 +3,7 @@ name: fibbot input action
 description: "An action that takes parameters and inputs"
 
 inputs:
-  enable_fibbo:
+  enable_fibbot:
     description: "Enable if the fibo calculation should take place or not"
     required: true
     default:  "true"
