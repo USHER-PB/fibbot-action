@@ -15,4 +15,8 @@ jobs:
 
       - name: Use custorm action
         uses: ./
+        with:
+          enable_fibbot: "true"
+          max_threshold: "100"
+
       
