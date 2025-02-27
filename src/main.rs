@@ -45,8 +45,8 @@ fn params() {
     if enable_fibbot == true {
         println!("welcome to our fibo calculator");
        
-    
-    let max_threshold: u128 = args[2]
+    let max_threshold = &args[2];
+    let max_threshold: u128 = max_threshold
     .trim()
     .parse()
     .expect("Expected a positive integer for max threshold.");
