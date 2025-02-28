@@ -23,16 +23,14 @@ jobs:
 
       - name: Install dependencies
         run: cargo build --release
-        
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_REF: ${{ github.event.pull_request.number }}
           enable_fibbot: "true"  # Set to "true" to enable Fibonacci calculation
           max_threshold: "100" # Set your desired max threshold
-        run: |
-          output=$(cargo run --release)
-          echo "::set-output name=result::$output"
+    
 
   comment:
     runs-on: ubuntu-latest
