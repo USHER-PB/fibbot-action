@@ -1,49 +1,44 @@
-name: Build and Push Docker Image
+name: Fibonacci Calculation and PR Comment
 
 on:
-  push:
   pull_request:
-    branches:
-      - master  # Change this to your default branch if necessary
+    types: [opened, synchronize]
 
 jobs:
-  build:
+  calculate-fibonacci:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Use custom action
         uses: ./
         with:
           enable_fibbot: "true"
           max_threshold: "100"
 
-   
-  comment:
-    runs-on: ubuntu-latest
-    needs: build  # Ensure this job runs after the build job
 
-    steps:
-      - name: Comment on PR
-        uses: actions/github-script@v3
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const issueNumber = context.issue.number;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const body = `👋 Thanks for reporting! Here is the output from the Rust program:\n\n\`\`\`\n${{ needs.build.outputs.result }}\n\`\`\``;
+          toolchain: stable
+          override: true
 
-            try {
-              const response = await github.issues.createComment({
-                issue_number: issueNumber,
-                owner: owner,
-                repo: repo,
-                body: body
-              });
-              console.log('Response:', response);
-            } catch (error) {
-              console.error('Error:', error);
-            }
+      - name: Build and run Rust program
+        id: fibonacci
+        run: |
+          # Build and run the Rust program, capturing the output
+          FIBONACCI_RESULT=$(cargo run -q)
+          echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
+
+      - name: Post comment on PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { FIBONACCI_RESULT } = process.env;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT}`
+            });
