@@ -1,31 +1,51 @@
-name: Build and Push Docker Image
+name: Process PR and Compute Fibonacci
 
 on:
-  push:
   pull_request:
     branches:
       - master  # Change this to your default branch if necessary
 
 jobs:
-  build:
+  process_pr:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Use custom action
-        uses: ./
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
         with:
-          enable_fibbot: "true"
-          max_threshold: "100"
+          toolchain: stable
+          override: true
+          components: rustfmt
 
-   
-  comment:
-    runs-on: ubuntu-latest
-    needs: build  # Ensure this job runs after the build job
+      - name: Get PR content
+        id: get_pr_content
+        run: |
+          echo "Fetching PR content..."
+          PR_BODY=$(jq -r .pull_request.body $GITHUB_EVENT_PATH)
+          echo "PR_BODY=$PR_BODY" >> $GITHUB_ENV
 
-    steps:
+      - name: Extract integers from PR content
+        id: extract_integers
+        run: |
+          echo "Extracting integers from PR content..."
+          integers=$(echo "$PR_BODY" | grep -o '[0-9]\+')
+          echo "EXTRACTED_INTEGERS=$integers" >> $GITHUB_ENV
+
+      - name: Build Rust project
+        run: cargo build --release
+
+      - name: Run Rust project
+        id: run_rust
+        run: |
+          for number in $EXTRACTED_INTEGERS; do
+            output=$(./target/release/your_program_name true 100) # Update with your binary name
+            echo "$output"
+          done > results.txt
+          echo "::set-output name=result::$(cat results.txt)"
+
       - name: Comment on PR
         uses: actions/github-script@v3
         with:
@@ -34,7 +54,7 @@ jobs:
             const issueNumber = context.issue.number;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const body = `👋 Thanks for reporting! Here is the output from the Rust program:\n\n\`\`\`\n${{ needs.build.outputs.result }}\n\`\`\``;
+            const body = `👋 Here are the Fibonacci results for the extracted numbers:\n\n\`\`\`\n${{ steps.run_rust.outputs.result }}\n\`\`\``;
 
             try {
               const response = await github.issues.createComment({
