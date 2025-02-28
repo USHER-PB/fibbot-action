@@ -2,6 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
+  pull_request:
     branches:
       - master  # Change this to your default branch if necessary
 
@@ -18,5 +19,18 @@ jobs:
         with:
           enable_fibbot: "true"
           max_threshold: "100"
-
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on pull_request
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '👋 Thanks for reporting!'
+            })
       
