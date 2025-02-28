@@ -84,6 +84,9 @@ fn params() {
 async fn post_comment(issue_number: u64, body: &str) {
     let client = Client::new();
     let token = env::var("GITHUB_TOKEN").unwrap();
+    let owner = env::var("GITHUB_REPOSITORY_OWNER").unwrap();
+    let repo = env::var("GITHUB_REPOSITORY").unwrap();
+
 
     let url = format!("https://api.github.com/repos/{}/{}/issues/{}/comments", owner, repo, issue_number);
     
