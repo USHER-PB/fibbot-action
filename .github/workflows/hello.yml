@@ -21,6 +21,7 @@ jobs:
           max_threshold: "100"
   comment:
     runs-on: ubuntu-latest
+
     steps:
         name: Comment on PR
         uses: actions/github-script@v3
@@ -40,4 +41,5 @@ jobs:
             });
             console.log('Response:', response);
           } catch (error) {
-          }  console.error('Error:
+            console.error('Error:', error);
+          }
