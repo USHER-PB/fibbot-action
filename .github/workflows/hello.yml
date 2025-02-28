@@ -14,32 +14,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Use custorm action
+      - name: Use custom action
         uses: ./
         with:
           enable_fibbot: "true"
           max_threshold: "100"
+
+      - name: Run Rust project
+        id: run_rust
+        run: |
+          output=$(./target/release/your_program_name true 100) # Update with your binary name
+          echo "::set-output name=result::$output"
+
   comment:
     runs-on: ubuntu-latest
+    needs: build  # Ensure this job runs after the build job
 
     steps:
-        name: Comment on PR
+      - name: Comment on PR
         uses: actions/github-script@v3
         with:
-        script: |
-          const issueNumber = context.issue.number;
-          const owner = context.repo.owner;
-          const repo = context.repo.repo;
-          const body = `👋 Thanks for reporting! Here is the output from the Rust program:\n\n\`\`\`\n${{ steps.run_rust.outputs.result }}\n\`\`\``;
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const body = `👋 Thanks for reporting! Here is the output from the Rust program:\n\n\`\`\`\n${{ needs.build.outputs.result }}\n\`\`\``;
 
-          try {
-            const response = await github.issues.createComment({
-              issue_number: issueNumber,
-              owner: owner,
-              repo: repo,
-              body: body
-            });
-            console.log('Response:', response);
-          } catch (error) {
-            console.error('Error:', error);
-          }
+            try {
+              const response = await github.issues.createComment({
+                issue_number: issueNumber,
+                owner: owner,
+                repo: repo,
+                body: body
+              });
+              console.log('Response:', response);
+            } catch (error) {
+              console.error('Error:', error);
+            }
