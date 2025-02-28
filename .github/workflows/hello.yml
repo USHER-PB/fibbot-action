@@ -22,15 +22,18 @@ jobs:
   comment:
     runs-on: ubuntu-latest
     steps:
-      - name: Comment on pull_request
+        name: Comment on PR
         uses: actions/github-script@v3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '👋 Thanks for reporting!'
-            })
-      
+            if (context.issue.number) {
+              await github.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '👋 Thanks for reporting!'
+              });
+            } else {
+              console.log('No issue number found. This may not be a pull request event.');
+            }
