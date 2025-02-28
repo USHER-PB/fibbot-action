@@ -14,13 +14,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Use custom action
-        uses: ./
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
         with:
-          enable_fibbot: "true"
-          max_threshold: "100"
+          toolchain: stable
+          override: true
+          components: rustfmt
 
-   
+      - name: Install dependencies
+        run: cargo build --release
+        
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.event.pull_request.number }}
+          enable_fibbot: "true"  # Set to "true" to enable Fibonacci calculation
+          max_threshold: "100" # Set your desired max threshold
+        run: |
+          output=$(cargo run --release)
+          echo "::set-output name=result::$output"
+
   comment:
     runs-on: ubuntu-latest
     needs: build  # Ensure this job runs after the build job
@@ -34,7 +47,7 @@ jobs:
             const issueNumber = context.issue.number;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const body = `👋 Thanks for reporting! Here is the output from the Rust program:\n\n\`\`\`\n${{ needs.build.outputs.result }}\n\`\`\``;
+            const body = `👋 Thanks for reporting! Here is the output from the Rust program:\n\n\`\`\`\n${{ steps.run_fibonacci.outputs.result }}\n\`\`\``;
 
             try {
               const response = await github.issues.createComment({
