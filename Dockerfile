@@ -1,25 +1,18 @@
-FROM rust:1.85 as builder  
+FROM rust:1.85 as builder
 
-# Create a new directory for the app
 WORKDIR /usr/src/fibbot
 
-# Copy the Cargo.toml and Cargo.lock files
 COPY Cargo.toml Cargo.lock ./
 
-# Create a new directory for the source code
 COPY src ./src
 
-# Build the application
 RUN cargo build --release
 
-# Use a base image with the required glibc version
-FROM ubuntu:22.04 
+FROM ubuntu:22.04
 
-# Install required libraries
-RUN apt-get clean ; apt-get update ; apt-get install -y libc6 ; rm -rf /var/lib/apt/lists/*
+# Install dependencies
+RUN apt-get update && apt-get install -y libc6 && rm -rf /var/lib/apt/lists/*
 
-# Copy the compiled binary from the builder stage
 COPY --from=builder /usr/src/fibbot/target/release/fibbot /usr/local/bin/fibbot
 
-# Set the entrypoint
-ENTRYPOINT ["/usr/local/bin/fibbot"]
+ENTRYPOINT ["fibbot"]

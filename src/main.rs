@@ -1,4 +1,7 @@
 use std::env;
+use reqwest::Client;
+use serde_json::json;
+
 fn fibo_calculator(max_threshold: u128, number: u128) {
     let args: Vec<String> = env::args().collect();
 
