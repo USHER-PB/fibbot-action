@@ -20,12 +20,7 @@ jobs:
           enable_fibbot: "true"
           max_threshold: "100"
 
-      - name: Run Rust project
-        id: run_rust
-        run: |
-          output=$(./target/release/your_program_name true 100) # Update with your binary name
-          echo "::set-output name=result::$output"
-
+   
   comment:
     runs-on: ubuntu-latest
     needs: build  # Ensure this job runs after the build job
