@@ -81,13 +81,31 @@ fn params() {
 //     let input = fibo_calulator();
 //     println!("{:?}", input)
 
+async fn post_comment(issue_number: u64, body: &str) {
+    let client = Client::new();
+    let token = env::var("GITHUB_TOKEN").unwrap();
+
+    let url = format!("https://api.github.com/repos/{}/{}/issues/{}/comments", owner, repo, issue_number);
+    
+    let res = client.post(&url)
+        .header("Authorization", format!("token {}", token))
+        .header("User-Agent", "FibBot")
+        .json(&json!({ "body": body }))
+        .send()
+        .await;
+    
+    match res {
+        Ok(response) => println!("Comment posted: {:?}", response),
+        Err(err) => eprintln!("Error posting comment: {:?}", err),
+    }
+}
 
 
 
 fn main() {
     println!("hello world");
-    let input = "abc 5 def 8 ghi 10 jkl 12";
-    let integers = extract_integer_strings(input);
+    let pr_content = "Here are some numbers: 5, 8, 13, and 21.";
+    let numbers = extract_integer_strings(pr_content);
     let max_threshold = 100;
 
     for number  in integers {
