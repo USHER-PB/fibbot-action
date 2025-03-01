@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, u128};
 use reqwest::Client;
 use serde_json::json;
 
@@ -7,7 +7,7 @@ async fn main() {
     // Fetching environment variables
     let input_enable_fib = env::var("INPUT_ENABLE_FIB").unwrap_or("true".to_string());
     let max_threshold: u128 = env::var("INPUT_MAX_THRESHOLD").unwrap_or("100".to_string()).parse().unwrap();
-    let pr_number_str = env::var("PR_NUMBER").expect("PR_NUMBER not set");
+    let pr_number_str = env::var("PR_NUMBER").expect("PR_NUMBER not set").unwrap_or
     println!("PR_NUMBER: {}", pr_number_str);
     // Parse the PR number with error handling
     let pr_number: u32 = match pr_number_str.parse() {
@@ -15,6 +15,7 @@ async fn main() {
         Err(_) => {
             eprintln!("Error: PR_NUMBER must be a valid integer.");
             std::process::exit(1); // Exit with an error code
+  
         }
     };
 

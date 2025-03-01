@@ -12,12 +12,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Use custom action
         uses: ./
         with:
           enable_fibbot: "true"
           max_threshold: "100"
-
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
@@ -32,15 +32,18 @@ jobs:
           FIBONACCI_RESULT=$(cargo run -q)
           echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
 
+          # Extract PR number from the GitHub event payload
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+
       - name: Post comment on PR
         uses: actions/github-script@v6
         with:
           script: |
-            const { FIBONACCI_RESULT } = process.env;
+            const { FIBONACCI_RESULT, PR_NUMBER } = process.env;
             github.rest.issues.createComment({
-              issue_number: context.issue.number,
+              issue_number: PR_NUMBER,  // Use the PR_NUMBER environment variable
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT}`
             });
-            
