@@ -30,7 +30,7 @@ runs:
 
     - name: Build and run Rust program
       run: |
-        FIBONACCI_RESULT=$(cargo run -q)
+        FIBONACCI_RESULT=$(cargo run )
         echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
         PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
         echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
