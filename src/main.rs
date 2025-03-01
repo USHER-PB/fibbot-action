@@ -45,7 +45,7 @@ async fn main() -> Result<()> {
     println!("PR Content: {}", pr_content);
 
     // Process PR content if Fibonacci calculation is enabled
-    if enable_fib == true {
+    if "enable_fib" == "true" {
         let integers = extract_integer_strings(&pr_content);
 
         for number in integers {
