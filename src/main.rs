@@ -14,10 +14,14 @@ async fn main() -> Result<()> {
 
     // Extract PR number from GITHUB_REF
     let pr_number: u32 = env::var("GITHUB_REF")
-        .ok()
-        .and_then(|num| num.parse().ok())
-        .context("Failed to parse PR number from GITHUB_REF. Please ensure the workflow is triggered by a pull request.")?;
-
+    .ok()
+    .and_then(|ref_value| {
+        ref_value
+            .split('/')
+            .nth(2)
+            .and_then(|num| num.parse().ok())
+    })
+    .context("Failed to parse PR number from GITHUB_REF. Please ensure the workflow is triggered by a pull request.")?;
     println!("PR Number: {}", pr_number);
 
     // Fetch PR content
