@@ -56,8 +56,9 @@ jobs:
           echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
           echo "INPUT_ENABLE_FIB: $INPUT_ENABLE_FIB"
           echo "INPUT_MAX_THRESHOLD: $INPUT_MAX_THRESHOLD"
-    run:
-      with:
+      - name: Use this variables 
+        run:
+        with:
         args:
           - enable_fibbot: "true"
           - max_threshold: "100"
@@ -80,3 +81,4 @@ jobs:
       #         repo: context.repo.repo,
       #         body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
       #       });
+ 
