@@ -38,7 +38,6 @@ async fn main() {
 async fn fetch_pr_content(owner: &str, repo: &str, pr_number: u32) -> Result<String, Box<dyn std::error::Error>> {
     let token = env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN not set");
     let client = Client::new();
-    let string    = "usher is 12 34 54".to_string();
     let url = format!(
         "https://api.github.com/repos/{}/{}/pulls/{}",
         owner, repo, pr_number
