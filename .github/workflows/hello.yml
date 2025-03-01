@@ -17,11 +17,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Rust
+      - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
+          components: rustfmt, clippy
+          profile: minimal
 
       - name: Install jq (for parsing JSON)
         run: sudo apt-get install -y jq
@@ -32,13 +34,12 @@ jobs:
           enable_fibbot: "true"
           max_threshold: "100"
 
-
       - name: Build and run Rust program
         id: fibonacci
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GITHUB_TOKEN is set
-          INPUT_ENABLE_FIB: ${{ inputs.enable_fibbot }}  # Passed from action.yml
-          INPUT_MAX_THRESHOLD: ${{ inputs.max_threshold }}  # Passed from action.yml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_ENABLE_FIB: ${{ github.event.inputs.enable_fibbot || 'true' }}
+          INPUT_MAX_THRESHOLD: ${{ github.event.inputs.max_threshold || '100' }}
         run: |
           # Build and run the Rust program, capturing the output
           FIBONACCI_RESULT=$(cargo run -q)
@@ -56,29 +57,27 @@ jobs:
           echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
           echo "INPUT_ENABLE_FIB: $INPUT_ENABLE_FIB"
           echo "INPUT_MAX_THRESHOLD: $INPUT_MAX_THRESHOLD"
-      - name: Use this variables 
-        run:
-        with:
-        args:
-          - enable_fibbot: "true"
-          - max_threshold: "100"
+
+      - name: Use this variables
+        run: |
+          echo "enable_fibbot: ${{ github.event.inputs.enable_fibbot || 'true' }}"
+          echo "max_threshold: ${{ github.event.inputs.max_threshold || '100' }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Post comment on PR
-      #   uses: actions/github-script@v6
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN to github-script
-      #     script: |
-      #       const { FIBONACCI_RESULT, PR_NUMBER } = process.env;
-      #       if (!PR_NUMBER) {
-      #         console.error("PR_NUMBER is not set. Cannot post comment.");
-      #         process.exit(1);
-      #       }
-      #       github.rest.issues.createComment({
-      #         issue_number: PR_NUMBER,  # Use the PR_NUMBER environment variable
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
-      #       });
- 
+      - name: Post comment on PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { FIBONACCI_RESULT, PR_NUMBER } = process.env;
+            if (!PR_NUMBER) {
+              console.error("PR_NUMBER is not set. Cannot post comment.");
+              process.exit(1);
+            }
+            github.rest.issues.createComment({
+              issue_number: PR_NUMBER,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
+            });
