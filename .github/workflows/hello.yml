@@ -4,6 +4,11 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+# Grant permissions to the GITHUB_TOKEN
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   calculate-fibonacci:
     runs-on: ubuntu-latest
@@ -17,9 +22,7 @@ jobs:
         with:
           enable_fibbot: "true"
           max_threshold: "100"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          
+
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
