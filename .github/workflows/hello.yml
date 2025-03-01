@@ -1,13 +1,8 @@
 name: Fibonacci Calculation and PR Comment
 
 on:
-  push:
   pull_request:
     types: [opened, synchronize]
-
-permissions:
-  pull-requests: write
-  contents: read
 
 jobs:
   calculate-fibonacci:
@@ -16,6 +11,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Print GITHUB_REF
+        run: echo "GITHUB_REF: $GITHUB_REF"
 
       - name: Use custom action
         uses: ./
