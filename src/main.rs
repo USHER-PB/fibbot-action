@@ -28,7 +28,7 @@ async fn main() -> Result<()> {
     .context("Failed to parse PR number from GITHUB_REF. Please ensure the workflow is triggered by a pull request.")?;
 
     // Fetch PR content
-    let pr_content = fetch_pr_content("USHER-PB", "Fibbot", pr_number)
+    let pr_content = fetch_pr_content("USHER-PB", "Fibbot-action", pr_number)
         .await
         .context("Failed to fetch PR content")?;
 
@@ -62,8 +62,8 @@ async fn fetch_pr_content(owner: &str, repo: &str, pr_number: u32) -> Result<Str
     let response = client
         .get(&url)
         .header("Authorization", format!("Bearer {}", token))
-        .header("User-Agent", "FibBot")
-        .header("Accept", "application/vnd.github.v3+json")
+        .header("Content-Type", "application/vnd.github+json")
+        .header("User-Agent", "USHER-PB")
         .send()
         .await
         .context("Failed to send request to GitHub API")?;
@@ -82,7 +82,7 @@ async fn post_comment(body: String) -> Result<()> {
     client
         .post(&url)
         .bearer_auth(token)
-        .header("User-Agent", "FibBot")
+        .header("User-Agent", "USHER-PB")
         .json(&json!({ "body": body }))
         .send()
         .await
