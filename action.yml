@@ -21,6 +21,7 @@ runs:
     - name: Set GITHUB_OWNER
       run: |
        echo "GITHUB_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
+    
     - name: Check if Fibonacci bot is enabled
       shell: bash
       run: |
