@@ -5,14 +5,24 @@ use serde_json::json;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Fetching environment variables
-    let input_enable_fib = env::var("INPUT_ENABLE_FIB").unwrap_or("true".to_string());
-    let max_threshold: u128 = env::var("INPUT_MAX_THRESHOLD")
-        .unwrap_or("100".to_string())
-        .parse()
-        .context("Failed to parse INPUT_MAX_THRESHOLD")?;
 
-    // Extract PR number from GITHUB_REF
+    let enable_fib = env::var("INPUT_ENABLE_FIB").unwrap_or("true".to_string());
+      println!("{}",enable_fib);
+    let max_threshold = env::var("INPUT_MAX_THRESHOLD").unwrap_or("100".to_string());
+
+    println!("{}", max_threshold);
+
+
+    let enable_fib:bool = enable_fib.trim().parse().expect("fail");
+    let max_threshold:u128 = max_threshold.trim().parse().expect("fail");
+    // Fetching environment variables\
+    // let input_enable_fib = env::var("INPUT_ENABLE_FIB").unwrap_or("true".to_string());
+    // let max_threshold: u128 = env::var("INPUT_MAX_THRESHOLD")
+    //     .unwrap_or("100".to_string())
+    //     .parse()
+    //     .context("Failed to parse INPUT_MAX_THRESHOLD")?;
+
+    // // Extract PR number from GITHUB_REF
     let pr_number: u32 = env::var("GITHUB_REF")
     .ok()
     .and_then(|ref_value| {
@@ -35,7 +45,7 @@ async fn main() -> Result<()> {
     println!("PR Content: {}", pr_content);
 
     // Process PR content if Fibonacci calculation is enabled
-    if input_enable_fib == "true" {
+    if enable_fib == true {
         let integers = extract_integer_strings(&pr_content);
 
         for number in integers {
