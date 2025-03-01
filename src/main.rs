@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
 
 
     let enable_fib:bool = enable_fib.trim().parse().unwrap_or(true);
-    let max_threshold:u128 = max_threshold.trim().parse().expect("fail");
+    let max_threshold:u128 = max_threshold.trim().parse().unwrap_or(100);
     // Fetching environment variables\
     // let input_enable_fib = env::var("INPUT_ENABLE_FIB").unwrap_or("true".to_string());
     // let max_threshold: u128 = env::var("INPUT_MAX_THRESHOLD")
