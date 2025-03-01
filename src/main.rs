@@ -97,7 +97,7 @@ async fn post_comment(body: String) -> Result<()> {
         .json(&json!({ "body": body }))
         .send()
         .await
-        .context("Failed to post comment")?;
+        .context("Failed to post comment")?;  
 
     Ok(())
 }
@@ -130,5 +130,6 @@ fn extract_integer_strings(input: &str) -> Vec<u128> {
         .filter(|s| s.chars().all(char::is_numeric)) // Keep only substrings that are all numeric
         .filter_map(|s| s.parse::<u128>().ok()) // Parse to u128 and filter out any parsing errors
         .collect() // Collect the results into a Vec<u128>
+
 }
 
