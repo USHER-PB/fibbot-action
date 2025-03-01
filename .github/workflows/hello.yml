@@ -56,7 +56,7 @@ jobs:
           echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
           echo "INPUT_ENABLE_FIB: $INPUT_ENABLE_FIB"
           echo "INPUT_MAX_THRESHOLD: $INPUT_MAX_THRESHOLD"
-    runs:
+    run:
       with:
         args:
           - enable_fibbot: "true"
