@@ -1,22 +1,53 @@
-name: fibbot input action
-
-description: "An action that takes parameters and inputs"
+name: 'Fibonacci Calculation and PR Comment'
+description: 'Calculate Fibonacci numbers and post results as PR comments'
+author: 'Your Name'
 
 inputs:
   enable_fibbot:
-    description: "Enable if the fibo calculation should take place or not"
+    description: 'Enable or disable the Fibonacci bot'
     required: true
-    default:  "true"
+    default: 'true'
   max_threshold:
-    description: "Set a max value to which the fibo calculation is supposed to stop"
+    description: 'Maximum threshold for Fibonacci calculation'
     required: true
-    default: "100"
+    default: '100'
 
 runs:
-  using: "docker"  # Specify the runtime environment
-  image: "Dockerfile"  # Specify the Dockerfile for building the image
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
 
- let pr_number: u32 = env::var("GITHUB_REF").ok().and_then(|ref_value| ref_value.split('/').nth(2)?.parse().ok()).context("it is not possible please restart")?;
-     
+    - name: Install jq
+      run: sudo apt-get install -y jq
+      shell: bash
 
+    - name: Build and run Rust program
+      run: |
+        FIBONACCI_RESULT=$(cargo run -q)
+        echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
+        PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Post comment on PR
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { FIBONACCI_RESULT, PR_NUMBER } = process.env;
+          if (!PR_NUMBER) {
+            console.error("PR_NUMBER is not set. Cannot post comment.");
+            process.exit(1);
+          }
+          github.rest.issues.createComment({
+            issue_number: PR_NUMBER,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
+          });
