@@ -39,10 +39,10 @@ jobs:
         id: fibonacci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-           echo "GITHUB_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
           INPUT_ENABLE_FIB: ${{ github.event.inputs.enable_fibbot || 'true' }}
           INPUT_MAX_THRESHOLD: ${{ github.event.inputs.max_threshold || '100' }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_OWNER: ${{ github.owner }}
          
         run: |
           # Build and run the Rust program, capturing the output
