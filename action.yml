@@ -17,3 +17,6 @@ runs:
   image: "Dockerfile"  # Specify the Dockerfile for building the image
 
 
+ let pr_number: u32 = env::var("GITHUB_REF").ok().and_then(|ref_value| ref_value.split('/').nth(2)?.parse().ok()).context("it is not possible please restart")?;
+     
+

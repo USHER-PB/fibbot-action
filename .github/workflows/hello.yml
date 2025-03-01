@@ -1,9 +1,12 @@
 name: Fibonacci Calculation and PR Comment
 
 on:
-  push:
-  pull_request:
+    pull_request:
     types: [opened, synchronize]
+
+    permissions: 
+      pull-request: write
+      content: re
 
 jobs:
   calculate-fibonacci:
