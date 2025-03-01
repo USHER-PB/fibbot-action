@@ -25,6 +25,9 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Install jq (for parsing JSON)
+        run: sudo apt-get install -y jq
+
       - name: Build and run Rust program
         id: fibonacci
         run: |
@@ -41,9 +44,13 @@ jobs:
         with:
           script: |
             const { FIBONACCI_RESULT, PR_NUMBER } = process.env;
+            if (!PR_NUMBER) {
+              console.error("PR_NUMBER is not set. Cannot post comment.");
+              process.exit(1);
+            }
             github.rest.issues.createComment({
               issue_number: PR_NUMBER,  // Use the PR_NUMBER environment variable
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT}`
+              body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
             });
