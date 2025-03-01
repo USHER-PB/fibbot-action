@@ -1,7 +1,5 @@
-name: 'Fibonacci Calculation and PR Comment'
-description: 'Calculate Fibonacci numbers and post results as PR comments'
-author: 'Your Name'
-
+name: 'Fibonacci Bot'
+description: 'A custom action to enable or disable the Fibonacci bot and set a maximum threshold.'
 inputs:
   enable_fibbot:
     description: 'Enable or disable the Fibonacci bot'
@@ -11,19 +9,24 @@ inputs:
     description: 'Maximum threshold for Fibonacci calculation'
     required: true
     default: '100'
-
 runs:
   using: 'composite'
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Check if Fibonacci bot is enabled
+      shell: bash
+      run: |
+        if [ "${{ inputs.enable_fibbot }}" == "true" ]; then
+          echo "Fibonacci bot is enabled."
+        else
+          echo "Fibonacci bot is disabled."
+        fi
 
-    - name: Set up Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
-
-    - name: Install jq
-      run: sudo apt-get install -y jq
-  
+    - name: Validate max threshold
+      shell: bash
+      run: |
+        if [ "${{ inputs.max_threshold }}" -gt 0 ]; then
+          echo "Max threshold is valid: ${{ inputs.max_threshold }}"
+        else
+          echo "Max threshold must be greater than 0."
+          exit 1
+        fi

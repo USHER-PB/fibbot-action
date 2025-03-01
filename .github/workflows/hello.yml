@@ -16,8 +16,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      
+      - name: Debug environment variables
+        run: |
+          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
+          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
+          echo "PR_NUMBER: $PR_NUMBER"
+          echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
 
-
+       
       - name: Build and run Rust program
         id: fibonacci
         env:
@@ -26,39 +33,11 @@ jobs:
           # Build and run the Rust program, capturing the output
           FIBONACCI_RESULT=$(cargo run -q)
           echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
-              PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+
+          # Extract PR number from the GitHub event payload
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
           echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
 
-
-      - name: Use custom action
-        uses: ./
-        with:
-          enable_fibbot: "true"
-          max_threshold: "100"
-
-      - name: Debug environment variables
-        run: |
-          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
-          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
-          echo "PR_NUMBER: $PR_NUMBER"
-          echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
-      - name: Post comment on PR
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN to github-script
-          script: |
-             const { FIBONACCI_RESULT, PR_NUMBER } = process.env;
-             if (!PR_NUMBER) {
-              console.error("PR_NUMBER is not set. Cannot post comment.");
-              process.exit(1);
-             }
-             github.rest.issues.createComment({
-              issue_number: PR_NUMBER,  // Use the PR_NUMBER environment variable
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
-             });
-  
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -68,7 +47,25 @@ jobs:
       - name: Install jq (for parsing JSON)
         run: sudo apt-get install -y jq
 
-          # Extract PR number from the GitHub event payload
+      - name: Use custom action
+        uses: ./.github/actions/fibbot-action  # Path to the directory containing action.yml
+        with:
+          enable_fibbot: "true"
+          max_threshold: "100"
 
-      
-            
+      - name: Post comment on PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN to github-script
+          script: |
+            const { FIBONACCI_RESULT, PR_NUMBER } = process.env;
+            if (!PR_NUMBER) {
+              console.error("PR_NUMBER is not set. Cannot post comment.");
+              process.exit(1);
+            }
+            github.rest.issues.createComment({
+              issue_number: PR_NUMBER,  # Use the PR_NUMBER environment variable
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
+            });
