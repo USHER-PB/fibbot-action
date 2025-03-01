@@ -1,16 +1,26 @@
 use std::env;
 use reqwest::Client;
-// use serde_json::json;
+use serde_json::json;
 
 #[tokio::main]
 async fn main() {
     // Fetching environment variables
     let input_enable_fib = env::var("INPUT_ENABLE_FIB").unwrap_or("true".to_string());
     let max_threshold: u128 = env::var("INPUT_MAX_THRESHOLD").unwrap_or("100".to_string()).parse().unwrap();
-    let pr_number = env::var("PR_NUMBER").expect("PR_NUMBER not set");
+    let pr_number_str = env::var("PR_NUMBER").expect("PR_NUMBER not set");
+    println!("PR_NUMBER: {}", pr_number_str);
+    // Parse the PR number with error handling
+    let pr_number: u32 = match pr_number_str.parse() {
+        Ok(num) => num,
+        Err(_) => {
+            eprintln!("Error: PR_NUMBER must be a valid integer.");
+            std::process::exit(1); // Exit with an error code
+        }
+    };
 
     // Fetch PR content
-    let pr_content = fetch_pr_content("USHER-PB", "Fibbot", pr_number.parse().unwrap()).await.expect("Failed to fetch PR content");
+    let mut pr_content = fetch_pr_content("USHER-PB", "Fibbot", pr_number).await.expect("Failed to fetch PR content");
+    pr_content = "usher is 12 34 54".to_string(); // Example content for processing
 
     // Process PR content if Fibonacci calculation is enabled
     if input_enable_fib == "true" {
@@ -54,7 +64,7 @@ async fn post_comment(body: String) {
     client.post(&url)
         .bearer_auth(token)
         .header("User-Agent", "FibBot")
-        // .json(&json!({ "body": body }))
+        .json(&json!({ "body": body }))
         .send()
         .await
         .expect("Failed to post comment");
