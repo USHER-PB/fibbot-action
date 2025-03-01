@@ -13,8 +13,10 @@ async fn main() -> Result<()> {
         .context("Failed to parse INPUT_MAX_THRESHOLD")?;
 
     // Extract PR number from GITHUB_REF
-    let pr_number: u32 = env::var("GITHUB_REF").ok().and_then(|ref_value| ref_value.split('/').nth(2)?.parse().ok()).context("it is not possible please restart")?;
-     
+    let pr_number: u32 = env::var("GITHUB_REF")
+        .ok()
+        .and_then(|num| num.parse().ok())
+        .context("Failed to parse PR number from GITHUB_REF. Please ensure the workflow is triggered by a pull request.")?;
 
     println!("PR Number: {}", pr_number);
 
@@ -31,8 +33,10 @@ async fn main() -> Result<()> {
 
         for number in integers {
             if number < max_threshold {
-                fibo_calculator(number).await; 
-                // Calculate and post Fibonacci value
+                // Handle the Result returned by fibo_calculator
+                if let Err(e) = fibo_calculator(number).await {
+                    eprintln!("Error calculating Fibonacci for {}: {}", number, e);
+                }
             }
         }
     }
@@ -107,5 +111,4 @@ fn extract_integer_strings(input: &str) -> Vec<u128> {
         .filter(|s| s.chars().all(char::is_numeric)) // Keep only substrings that are all numeric
         .filter_map(|s| s.parse::<u128>().ok()) // Parse to u128 and filter out any parsing errors
         .collect() // Collect the results into a Vec<u128>
-        
 }
