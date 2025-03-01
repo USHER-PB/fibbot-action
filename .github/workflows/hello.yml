@@ -36,14 +36,15 @@ jobs:
         id: fibonacci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GITHUB_TOKEN is set
-          run: |
-            # Build and run the Rust program, capturing the output
-            FIBONACCI_RESULT=$(cargo run -q)
-            echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
-  
-            # Extract PR number from the GitHub event payload
-            PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-            echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+        run: |
+          # Build and run the Rust program, capturing the output
+          FIBONACCI_RESULT=$(cargo run -q)
+          echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
+
+          # Extract PR number from the GitHub event payload
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+
       - name: Debug environment variables
         run: |
           echo "GITHUB_TOKEN: $GITHUB_TOKEN"
