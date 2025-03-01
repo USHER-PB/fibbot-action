@@ -118,6 +118,7 @@ async fn fibo_calculator(number: u128) -> Result<()> {
         b = pre_fib;
         if i == number {
             post_comment(format!("The Fibonacci value of {} is {}", number, b)).await?;
+            
         }
     }
 
