@@ -87,8 +87,9 @@ async fn post_comment(body: String) -> Result<()> {
     let token = env::var("GITHUB_TOKEN").context("GITHUB_TOKEN not set")?;
     let repo = env::var("GITHUB_REPOSITORY").context("GITHUB_REPOSITORY not set")?;
     let pr_number = env::var("PR_NUMBER").context("PR_NUMBER not set")?;
+    let owner = env::var("GITHUB_OWNER").context("GITHUB_OWNER not set")?;
 
-    let url = format!("https://api.github.com/repos/{}/issues/{}/comments", repo, pr_number);
+    let url = format!("https://api.github.com/repos/{}/{}/issues/{}/comments",owner, repo, pr_number);
     client
         .post(&url)
         .bearer_auth(token)
