@@ -28,6 +28,7 @@ jobs:
       - name: Install jq (for parsing JSON)
         run: sudo apt-get install -y jq
 
+
       - name: Use custom action
         uses: ./  # Path to the directory containing action.yml
         with:
@@ -49,22 +50,6 @@ jobs:
           PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
           echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
 
-      - name: Debug environment variables
-        run: |
-          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
-          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
-          echo "PR_NUMBER: $PR_NUMBER"
-          echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
-          echo "INPUT_ENABLE_FIB: $INPUT_ENABLE_FIB"
-          echo "INPUT_MAX_THRESHOLD: $INPUT_MAX_THRESHOLD"
-
-      - name: Use this variables
-        run: |
-          echo "enable_fibbot: ${{ github.event.inputs.enable_fibbot || 'true' }}"
-          echo "max_threshold: ${{ github.event.inputs.max_threshold || '100' }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Post comment on PR
         uses: actions/github-script@v6
         with:
@@ -81,3 +66,23 @@ jobs:
               repo: context.repo.repo,
               body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
             });
+
+
+     
+      - name: Debug environment variables
+        run: |
+          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
+          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
+          echo "PR_NUMBER: $PR_NUMBER"
+          echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
+          echo "INPUT_ENABLE_FIB: $INPUT_ENABLE_FIB"
+          echo "INPUT_MAX_THRESHOLD: $INPUT_MAX_THRESHOLD"
+
+      - name: Use this variables
+        run: |
+          echo "enable_fibbot: ${{ github.event.inputs.enable_fibbot || 'true' }}"
+          echo "max_threshold: ${{ github.event.inputs.max_threshold || '100' }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    
