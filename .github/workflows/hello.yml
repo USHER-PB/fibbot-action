@@ -17,7 +17,9 @@ jobs:
         with:
           enable_fibbot: "true"
           max_threshold: "100"
-
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
