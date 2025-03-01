@@ -42,7 +42,7 @@ jobs:
          
       - name: Set GITHUB_OWNER
         run: |
-         echo "GITHUB_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
+          echo "GITHUB_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
       
           INPUT_ENABLE_FIB: ${{ github.event.inputs.enable_fibbot || 'true' }}
           INPUT_MAX_THRESHOLD: ${{ github.event.inputs.max_threshold || '100' }}
