@@ -18,6 +18,9 @@ runs:
         echo "INPUT_ENABLE_FIB=${{ inputs.enable_fibbot }}" >> $GITHUB_ENV
         echo "INPUT_MAX_THRESHOLD=${{ inputs.max_threshold }}" >> $GITHUB_ENV
 
+    - name: Set GITHUB_OWNER
+      run: |
+       echo "GITHUB_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
     - name: Check if Fibonacci bot is enabled
       shell: bash
       run: |
