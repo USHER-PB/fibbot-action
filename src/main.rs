@@ -1,4 +1,4 @@
-use std::{env, u128};
+use std::{env, fs, u128};
 use anyhow::{Context, Result};
 use reqwest::Client;
 use serde_json::json;
@@ -130,4 +130,28 @@ fn extract_integer_strings(input: &str) -> Vec<u128> {
         .filter(|s| s.chars().all(char::is_numeric)) // Keep only substrings that are all numeric
         .filter_map(|s| s.parse::<u128>().ok()) // Parse to u128 and filter out any parsing errors
         .collect() // Collect the results into a Vec<u128>
+}
+
+
+async fn process_modified_files(file_paths: &str) -> String {
+    let mut all_numbers = Vec::new();
+
+    for file_path in file_paths.split(',') {
+        if let Ok(content) = fs::read_to_string(file_path) {
+            let numbers = extract_integer_strings(&content);
+            all_numbers.extend(numbers);
+        }
+    }
+
+    if all_numbers.is_empty() {
+        return "No numbers found in the modified files.".to_string();
+    }
+
+    let mut response = String::from("#### Fibonacci Results:\n");
+    for &num in &all_numbers {
+        let fib = fibo_calculator(num).await; // Await
+        response.push_str(&format!("- Fibonacci({:?}) = {:?}\n", num, fib));
+    }
+
+    response
 }

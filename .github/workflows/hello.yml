@@ -2,7 +2,7 @@ name: Fibonacci Calculation and PR Comment
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, edited]
 
 # Grant permissions to the GITHUB_TOKEN
 permissions:
