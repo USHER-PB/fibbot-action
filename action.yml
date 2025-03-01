@@ -2,7 +2,7 @@ name: 'Fibonacci Bot'
 description: 'A custom action to enable or disable the Fibonacci bot and set a maximum threshold.'
 inputs:
   enable_fibbot:
-    description: 'Enable fi
+    description: 'Enable or disable the Fibonacci bot'
     required: true
     default: 'true'
   max_threshold:
@@ -12,6 +12,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Set environment variables
+      shell: bash
+      run: |
+        echo "INPUT_ENABLE_FIB=${{ inputs.enable_fibbot }}" >> $GITHUB_ENV
+        echo "INPUT_MAX_THRESHOLD=${{ inputs.max_threshold }}" >> $GITHUB_ENV
+
     - name: Check if Fibonacci bot is enabled
       shell: bash
       run: |
