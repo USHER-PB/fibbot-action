@@ -16,27 +16,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
-      - name: Debug environment variables
-        run: |
-          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
-          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
-          echo "PR_NUMBER: $PR_NUMBER"
-          echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
-
-       
-      - name: Build and run Rust program
-        id: fibonacci
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GITHUB_TOKEN is set
-        run: |
-          # Build and run the Rust program, capturing the output
-          FIBONACCI_RESULT=$(cargo run -q)
-          echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
-
-          # Extract PR number from the GitHub event payload
-          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-          echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
@@ -48,10 +27,34 @@ jobs:
         run: sudo apt-get install -y jq
 
       - name: Use custom action
-        uses: ./
+        uses: ./  # Path to the root directory containing action.yml
         with:
           enable_fibbot: "true"
           max_threshold: "100"
+
+      - name: Build and run Rust program
+        id: fibonacci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GITHUB_TOKEN is set
+          INPUT_ENABLE_FIB: ${{ inputs.enable_fibbot }}  # Passed from action.yml
+          INPUT_MAX_THRESHOLD: ${{ inputs.max_threshold }}  # Passed from action.yml
+        run: |
+          # Build and run the Rust program, capturing the output
+          FIBONACCI_RESULT=$(cargo run -q)
+          echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
+
+          # Extract PR number from the GitHub event payload
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+
+      - name: Debug environment variables
+        run: |
+          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
+          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
+          echo "PR_NUMBER: $PR_NUMBER"
+          echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
+          echo "INPUT_ENABLE_FIB: $INPUT_ENABLE_FIB"
+          echo "INPUT_MAX_THRESHOLD: $INPUT_MAX_THRESHOLD"
 
       - name: Post comment on PR
         uses: actions/github-script@v6
