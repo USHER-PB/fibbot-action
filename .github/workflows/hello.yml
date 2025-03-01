@@ -1,13 +1,12 @@
 name: Fibonacci Calculation and PR Comment
 
 on:
-    
-    pull_request:
+  pull_request:
     types: [opened, synchronize]
 
-    permissions: 
-      pull-request: write
-      content: re
+permissions:
+  pull-requests: write
+  contents: read
 
 jobs:
   calculate-fibonacci:
@@ -22,9 +21,6 @@ jobs:
         with:
           enable_fibbot: "true"
           max_threshold: "100"
-
-
-          
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
@@ -61,4 +57,3 @@ jobs:
               repo: context.repo.repo,
               body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
             });
-            
