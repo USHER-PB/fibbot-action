@@ -2,7 +2,7 @@ name: Fibonacci Calculation and PR Comment
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, edited]
 
 # Grant permissions to the GITHUB_TOKEN
 permissions:
@@ -56,6 +56,13 @@ jobs:
           echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
           echo "INPUT_ENABLE_FIB: $INPUT_ENABLE_FIB"
           echo "INPUT_MAX_THRESHOLD: $INPUT_MAX_THRESHOLD"
+    runs:
+      with:
+        args:
+          - enable_fibbot: "true"
+          - max_threshold: "100"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Post comment on PR
       #   uses: actions/github-script@v6
