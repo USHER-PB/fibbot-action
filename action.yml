@@ -8,7 +8,7 @@ inputs:
   max_threshold:
     description: 'Maximum threshold for Fibonacci calculation'
     required: true
-    default: '100'
+    default: "100"
 runs:
   using: 'composite'
   steps:
