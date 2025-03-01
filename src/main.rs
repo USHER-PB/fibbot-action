@@ -1,7 +1,9 @@
-use std::{env, fs, u128};
+use std::{env, u128};
 use anyhow::{Context, Result};
 use reqwest::Client;
 use serde_json::json;
+mod modify;
+use modify::process_modified_files;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -56,6 +58,12 @@ async fn main() -> Result<()> {
                 }
             }
         }
+
+        let file_paths = "tri.txt";
+        let result = process_modified_files(file_paths).await?;
+
+        // Post the result as a comment on the PR
+        post_comment(result).await?;
     }
 
     Ok(())
@@ -132,26 +140,3 @@ fn extract_integer_strings(input: &str) -> Vec<u128> {
         .collect() // Collect the results into a Vec<u128>
 }
 
-
- async fn process_modified_files(file_paths: &str) -> String {
-    let mut all_numbers = Vec::new();
-
-    for file_path in file_paths.split(',') {
-        if let Ok(content) = fs::read_to_string(file_path) {
-            let numbers = extract_integer_strings(&content);
-            all_numbers.extend(numbers);
-        }
-    }
-
-    if all_numbers.is_empty() {
-        return "No numbers found in the modified files.".to_string();
-    }
-
-    let mut response = String::from("#### Fibonacci Results:\n");
-    for &num in &all_numbers {
-        let fib = fibo_calculator(num);// ;Await
-        response.push_str(&format!("- Fibonacci({:?}) = {:?}\n", num, fib));
-    }
-
-    response
-}
