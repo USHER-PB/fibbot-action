@@ -1,0 +1,11 @@
+prefix=/home/usherking/projects/rust/per_ex/fibbot/target/debug/build/openssl-sys-c4c53d60ad638241/out/openssl-build/install
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include 
+
+Name: OpenSSL-libssl
+Description: Secure Sockets Layer and cryptography libraries
+Version: 3.4.1
+Requires.private: libcrypto
+Libs: -L${libdir} -lssl
+Cflags: -I${includedir}

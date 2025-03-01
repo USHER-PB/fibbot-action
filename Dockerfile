@@ -1,24 +1,29 @@
-FROM rust:1.85 as builder
+# Use a valid Rust nightly image with Alpine Linux
+FROM rustlang/rust:nightly-alpine3.19
 
-# Install OpenSSL development libraries
-RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
+# Install system dependencies
+RUN apk add --no-cache \
+    openssl-dev \
+    perl \
+    pkgconfig \
+    musl-dev \
+    ca-certificates \
+    make \
+    gcc \
+    libc-dev \
+    openssl \
+    openssl-libs-static
 
-WORKDIR /usr/src/fibbot
+# Set the working directory
+WORKDIR /app
 
-COPY Cargo.toml Cargo.lock ./
+# Copy the source code into the container
+COPY . .
 
-COPY src ./src
+# Build the project
+RUN cargo build --release \
+    --features "openssl-sys/vendored" \
+    --target x86_64-unknown-linux-musl
 
-# Set OPENSSL_DIR if needed
-ENV OPENSSL_DIR=/usr/local/ssl
-
-RUN cargo build --release
-
-FROM ubuntu:22.04
-
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y libc6 && rm -rf /var/lib/apt/lists/*
-
-COPY --from=builder /usr/src/fibbot/target/release/fibbot /usr/local/bin/fibbot
-
-ENTRYPOINT ["fibbot"]
+# Optionally, you can specify the entry point if your project produces a binary
+# ENTRYPOINT ["./target/release/your_binary_name"]
