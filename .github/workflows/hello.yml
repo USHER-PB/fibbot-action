@@ -32,6 +32,7 @@ jobs:
           enable_fibbot: "true"
           max_threshold: "100"
 
+
       - name: Build and run Rust program
         id: fibonacci
         env:
