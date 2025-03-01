@@ -48,7 +48,7 @@ jobs:
         run: sudo apt-get install -y jq
 
       - name: Use custom action
-        uses: ./.github/actions/fibbot-action  # Path to the directory containing action.yml
+        uses: ./
         with:
           enable_fibbot: "true"
           max_threshold: "100"
