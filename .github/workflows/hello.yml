@@ -23,6 +23,7 @@ jobs:
           enable_fibbot: "true"
           max_threshold: "100"
 
+          
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
