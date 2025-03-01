@@ -102,6 +102,7 @@ async fn post_comment(body: String) -> Result<()> {
     Ok(())
 }
 
+
 async fn fibo_calculator(number: u128) -> Result<()> {
     let mut a: u128 = 0;
     let mut b: u128 = 1;
