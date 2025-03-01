@@ -2,7 +2,7 @@ name: 'Fibonacci Bot'
 description: 'A custom action to enable or disable the Fibonacci bot and set a maximum threshold.'
 inputs:
   enable_fibbot:
-    description: 'Enable or disable the Fibonacci bot'
+    description: 'Enable fi
     required: true
     default: 'true'
   max_threshold:
