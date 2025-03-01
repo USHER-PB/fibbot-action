@@ -31,7 +31,8 @@ async fn main() -> Result<()> {
 
         for number in integers {
             if number < max_threshold {
-                let _ = fibo_calculator(number).await;// Calculate and post Fibonacci value
+                fibo_calculator(number).await; 
+                // Calculate and post Fibonacci value
             }
         }
     }
@@ -93,7 +94,6 @@ async fn fibo_calculator(number: u128) -> Result<()> {
         a = b;
         b = pre_fib;
         if i == number {
-        println!("the fibonnaci of the values are {} is {}", number , b);
             post_comment(format!("The Fibonacci value of {} is {}", number, b)).await?;
         }
     }
