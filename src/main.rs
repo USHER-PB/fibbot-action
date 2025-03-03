@@ -82,6 +82,7 @@ async fn main() -> Result<()> {
 //     let response_text = response.text().await.context("Failed to read response body")?;
 //     Ok(response_text)
 // }
+
 async fn post_comment(body: String) -> Result<()> {
     let client = Client::new();
     let token = env::var("GITHUB_TOKEN").context("GITHUB_TOKEN not set")?;
@@ -93,21 +94,21 @@ async fn post_comment(body: String) -> Result<()> {
         "https://api.github.com/repos/{}/{}/issues/{}/comments",
         owner, repo, pr_number
     );
-
-    let response = client
+    let result = client
         .post(&url)
         .bearer_auth(token)
         .header("User-Agent", "USHER-PB")
         .json(&json!({ "body": body }))
         .send()
         .await
-        .context("Failed to post comment")?;
-
-    if response.status().is_success() {
-        println!("Posted with success");
-    } else {
-        let response_text = response.text().await.context("Failed to read response body")?;
-        eprintln!("Failed to post comment: {}", response_text);
+        .context("Failed to post comment");
+    match result {
+        Ok(_) => {
+            println!("Posted with success")
+        }
+        Err(e) => {
+            eprintln!("Posting did not succeded {}",e);
+        }
     }
 
     Ok(())
@@ -129,7 +130,7 @@ async fn post_comment(body: String) -> Result<()> {
         b = pre_fib;
         if i == number {
             println!("the fibonnaci of {} is {}", number, b);
-            let _ = post_comment(format!("The Fibonacci value of {} is {}", number, b)).await;
+            post_comment(format!("The Fibonacci value of {} is {}", number, b)).await;
         }
     }
     Ok(b)
