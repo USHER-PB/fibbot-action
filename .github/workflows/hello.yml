@@ -18,7 +18,25 @@ jobs:
       - name: Comment PR 
         uses: thollander/actions-comment/pull-request@v1
 
+name: "FibBot Action workflow"
 
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  run-fibbot:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+  
+      - name: Comment PR 
+        uses: thollander/actions-comment-pull-request@v1
 
       - name: Build and run FibBot
         uses: ./
@@ -27,3 +45,5 @@ jobs:
           enable_fib: "true"
           max_threshold: "100"
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+   
