@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+  permissions:
+    pull-requests: write
+    contents: read
+
 jobs:
   run-fibbot:
     runs-on: ubuntu-latest
@@ -26,8 +30,8 @@ jobs:
         uses: ./
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          ENABLE_FIB: "true"
-          MAXIMUM THRESHOLD: "100"
+          INPUT_ENABLE_FIB: "true"
+          INPUT_MAX_THRESHOLD: "100"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
      
