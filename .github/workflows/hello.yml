@@ -24,13 +24,13 @@ jobs:
         id: fibbot
         uses: ./
         with:
+          echo "fib_result=YOUR_RESULT" >> $GITHUB_ENV
           pr_number: ${{ github.event.pull_request.number }}
           enable_fib: "true"
           max_threshold: "100"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and run FibBot
-        id: fibbot
+      - name: Build and run program
         run: |
           cargo build --release
           OUTPUT=$(./target/release/fibbot)
@@ -42,4 +42,4 @@ jobs:
         with:
           message: |
             Fibonacci calculation result:
-            ${{ steps.fibbot.outputs.fib_result }}
+             echo "Fibonacci result is: ${{ steps.fibbot.outputs.fib_result }}"
