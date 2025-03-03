@@ -1,87 +1,29 @@
-name: Fibonacci Calculation and PR Comment
+name: "FibBot Action workflow"
 
 on:
   pull_request:
-    types: [opened, synchronize, edited]
-
-permissions:
-  pull-requests: write
-  contents: read
+    types: [opened, synchronize, reopened]
 
 jobs:
-  calculate-fibonacci:
+  run-fibbot:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+  
+      - name: Comment PR 
+        uses: thollander/actions-comment/pull-request@v1
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
+
+
+      - name: Build and run FibBot
+        uses: ./
         with:
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
-          profile: minimal
-
-      - name: Install jq (for parsing JSON)
-        run: sudo apt-get install -y jq
-
-      - name: Debug GitHub event payload
-        run: |
-          cat "$GITHUB_EVENT_PATH"
-
-      - name: Use custom action
-        uses: ./  # Path to the directory containing action.yml
-        with:
-          enable_fibbot: "true"
-          max_threshold: 100  # Pass as a number, not a string
-
-      - name: Build and run Rust program
-        id: fibonacci
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          INPUT_ENABLE_FIB: ${{ github.event.inputs.enable_fibbot || 'true' }}
-          INPUT_MAX_THRESHOLD: ${{ github.event.inputs.max_threshold || '100' }}
-        run: |
-          # Build and run the Rust program, capturing the output
-          FIBONACCI_RESULT=$(cargo run -q)
-          if [ -z "$FIBONACCI_RESULT" ]; then
-            echo "Error: FIBONACCI_RESULT is empty."
-            exit 1
-          fi
-          echo "FIBONACCI_RESULT=$FIBONACCI_RESULT" >> $GITHUB_ENV
-
-          # Extract PR number from the GitHub event payload
-          PR_NUMBER=$(jq --raw-output .number "$GITHUB_EVENT_PATH")
-          if [ -z "$PR_NUMBER" ]; then
-            echo "Error: PR_NUMBER is not set."
-            exit 1
-          fi
-          echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
-
-      - name: Debug environment variables
-        run: |
-          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
-          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
-          echo "PR_NUMBER: $PR_NUMBER"
-          echo "FIBONACCI_RESULT: $FIBONACCI_RESULT"
-          echo "INPUT_ENABLE_FIB: $INPUT_ENABLE_FIB"
-          echo "INPUT_MAX_THRESHOLD: $INPUT_MAX_THRESHOLD"
-
-      - name: Post comment on PR
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { FIBONACCI_RESULT, PR_NUMBER } = process.env;
-            if (!PR_NUMBER) {
-              console.error("PR_NUMBER is not set. Cannot post comment.");
-              process.exit(1);
-            }
-            github.rest.issues.createComment({
-              issue_number: PR_NUMBER,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Here is the Fibonacci sequence: ${FIBONACCI_RESULT || "No result"}`
-            });
+          pr_number: ${{ github.event.pull_request.number }}
+          enable_fib: "true"
+          max_threshold: "100"
+          github_token: ${{ secrets.GITHUB_TOKEN }}

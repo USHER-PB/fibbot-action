@@ -1,38 +1,30 @@
-name: 'Fibonacci Bot'
-description: 'A custom action to enable or disable the Fibonacci bot and set a maximum threshold.'
+name: "Fibbot"
+description: "A GitHub Action to calculate Fibonacci numbers from PR content."
+author: "USHER-PB"
+
 inputs:
-  enable_fibbot:
-    description: 'Enable or disable the Fibonacci bot'
-    required: true
-    default: 'true'
+  pr_number:
+    description: "The number of the pull request."
+    required: false
+  enable_fib:
+    description: "Enable Fibonacci calculation (true/false)."
+    required: false
+    default: "true"
   max_threshold:
-    description: 'Maximum threshold for Fibonacci calculation'
-    required: true
+    description: "Maximum threshold for Fibonacci calculation."
+    required: false
     default: "100"
+  github_token:
+    description: "GitHub token to interact with GitHub API."
+    required: true
+    default: ${{ github.token }}
+
 runs:
-  using: 'composite'
-  steps:
-    - name: Set environment variables
-      shell: bash
-      run: |
-        echo "INPUT_ENABLE_FIB=${{ inputs.enable_fibbot }}" >> $GITHUB_ENV
-        echo "INPUT_MAX_THRESHOLD=${{ inputs.max_threshold }}" >> $GITHUB_ENV
-
-    - name: Check if Fibonacci bot is enabled
-      shell: bash
-      run: |
-        if [ "${{ inputs.enable_fibbot }}" == "true" ]; then
-          echo "Fibonacci bot is enabled."
-        else
-          echo "Fibonacci bot is disabled."
-        fi
-
-    - name: Validate max threshold
-      shell: bash
-      run: |
-        if [ "${{ inputs.max_threshold }}" -gt 0 ]; then
-          echo "Max threshold is valid: ${{ inputs.max_threshold }}"
-        else
-          echo "Max threshold must be greater than 0."
-          exit 1
-        fi
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.enable_fib }}
+    - ${{ inputs.max_threshold }}
+  env:
+    PR_NUMBER: ${{ inputs.pr_number }}
+    GITHUB_TOKEN: ${{ inputs.github_token }}
