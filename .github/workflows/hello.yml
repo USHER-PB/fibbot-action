@@ -29,15 +29,10 @@ jobs:
           max_threshold: "100"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run fibbot
-        run: |
-          cargo build --release
-          OUTPUT=$(./target/release/fibbot)
-          echo "Output from fibbot: $OUTPUT"
-          
+     
       - name: Comment PR with Fibonacci result
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
-            Fibonacci calculation result:
-             echo "fib_result=$(echo "$OUTPUT" | grep '::set-output name=fib_result::' | sed 's/.*:: //')" >> $GITHUB_ENV
+             cargo build --release
+             OUTPUT=$(./target/release/fibbot)

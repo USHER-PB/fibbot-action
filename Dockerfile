@@ -1,29 +1,30 @@
-# Use a valid Rust nightly image with Alpine Linux
-FROM rustlang/rust:nightly-alpine3.19
-
-# Install system dependencies
-RUN apk add --no-cache \
-    openssl-dev \
-    perl \
-    pkgconfig \
-    musl-dev \
-    ca-certificates \
-    make \
-    gcc \
-    libc-dev \
-    openssl \
-    openssl-libs-static
+# Use the official Rust image as the build stage
+FROM rust:1.85 as builder
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /usr/src/fibbot
 
-# Copy the source code into the container
+# Install musl-tools and other necessary packages
+RUN apt-get update && apt-get install -y musl-tools clang pkg-config libssl-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Add the musl target
+RUN rustup target add x86_64-unknown-linux-musl
+
+# Copy the Cargo.toml and Cargo.lock files
+COPY Cargo.toml Cargo.lock ./
+
+# Copy the actual source code
 COPY . .
 
-# Build the project
-RUN cargo build --release \
-    --features "openssl-sys/vendored" \
-    --target x86_64-unknown-linux-musl
+# Build the actual application statically
+RUN cargo build --release --target=x86_64-unknown-linux-musl
 
-# Optionally, you can specify the entry point if your project produces a binary
-# ENTRYPOINT ["./target/release/your_binary_name"]
+# Use a minimal base image
+FROM scratch
+
+# Copy the statically linked binary
+COPY --from=builder /usr/src/fibbot/target/x86_64-unknown-linux-musl/release/fibbot /usr/local/bin/fibbot
+
+# Set the entrypoint for the container
+ENTRYPOINT ["/usr/local/bin/fibbot"]
