@@ -14,31 +14,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-  
-      - name: Comment PR 
-        uses: thollander/actions-comment/pull-request@v1
 
-name: "FibBot Action workflow"
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-jobs:
-  run-fibbot:
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-  
-      - name: Comment PR 
-        uses: thollander/actions-comment-pull-request@v1
-
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
       - name: Build and run FibBot
+        id: fibbot
         uses: ./
         with:
           pr_number: ${{ github.event.pull_request.number }}
@@ -46,4 +29,17 @@ jobs:
           max_threshold: "100"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-   
+      - name: Build and run FibBot
+        id: fibbot
+        run: |
+          cargo build --release
+          OUTPUT=$(./target/release/fibbot)
+          echo "$OUTPUT"
+          echo "::set-output name=fib_result::$(echo "$OUTPUT" | grep '::set-output name=fib_result::' | sed 's/.*:: //')"
+
+      - name: Comment PR with Fibonacci result
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: |
+            Fibonacci calculation result:
+            ${{ steps.fibbot.outputs.fib_result }}
