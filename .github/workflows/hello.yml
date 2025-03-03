@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+    permissions:
+      pull-requests: write
+      contents: read
+
 jobs:
   run-fibbot:
     runs-on: ubuntu-latest
@@ -12,6 +16,16 @@ jobs:
       contents: read
 
     steps:
+
+      - name: Cached Cargo registry and build
+        uses: actions/cache@v4
+        with:
+          path: |~.cargo/bin/~/.cargo/registry/index/~/.cargo/registry/cache/~.cargo/.git/db/
+           target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |${{ runner.os }}-cargo-
+
+          
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -26,9 +40,11 @@ jobs:
         uses: ./
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          ENABLE_FIB: "true"
-          MAXIMUM THRESHOLD: "100"
+          INPUT_ENABLE_FIB: "true"
+          INPUT_MAX_THRESHOLD: "100"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_OWNER: ${{ github.actor.repository }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
      
      

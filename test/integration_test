@@ -1,0 +1,10 @@
+
+
+#[cfg(test)]
+  mod test;
+
+#[test]
+  fn fibo_result(){
+   assert_eq!("144, fibo_calculation(12)")
+
+  }
