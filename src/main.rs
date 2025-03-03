@@ -2,6 +2,8 @@ use std::{env, fs, u128};
 use anyhow::{Context, Result};
 use reqwest::Client;
 use serde_json::json;
+mod modify;
+use modify::process_modified_files;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -58,6 +60,12 @@ async fn main() -> Result<()> {
                 }
             }
         }
+
+        let file_paths = "tri.txt";
+        let result = process_modified_files(file_paths).await?;
+
+        // Post the result as a comment on the PR
+        post_comment(result).await?;
     }
 
     Ok(())
