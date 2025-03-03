@@ -119,25 +119,33 @@ async fn post_comment(body: String) -> Result<()> {
     let mut b: u128 = 1;
 
     if number == 0 {
-        let _ = post_comment(format!("The Fibonacci value of {} is {}", number, a)).await;
-        println!("the fibonnaci of {} is {}", number, a);
-        
+        if let Err(e) = post_comment(format!("The Fibonacci value of {} is {}", number, a)).await {
+            eprintln!("Error posting comment: {}", e);
+            println!("the fibonnaci of {} is {}", number, a);
+        }
+
     }
+ 
 
     for i in 2..=number {
        let pre_fib = a + b;
         a = b;
         b = pre_fib;
-        if i == number {
-            println!("the fibonnaci of {} is {}", number, b);
-            post_comment(format!("The Fibonacci value of {} is {}", number, b)).await;
-        }
+
+    }   
+    println!("the fibonnaci of {} is {}", number, b);
+        // Handle the result of post_comment
+        if let Err(e) = post_comment(format!("The Fibonacci value of {} is {}", number, b)).await {
+            eprintln!("Error posting comment: {}", e);
+           
     }
-    Ok(b)
-  
+ Ok(b)
+}
+
+
 
  
-}
+
 
 fn extract_integer_strings(input: &str) -> Vec<u128> {
     input
