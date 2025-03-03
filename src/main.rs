@@ -1,22 +1,20 @@
-use std::{env, fs, u128};
 use anyhow::{Context, Result};
 use reqwest::Client;
 use serde_json::json;
+use std::{env, fmt::format, fs, u128};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-
     let enable_fib = env::var("INPUT_ENABLE_FIB").unwrap_or("true".to_string());
-      println!("{}",enable_fib);
+    println!("{}", enable_fib);
     let max_threshold = env::var("INPUT_MAX_THRESHOLD").unwrap_or("100".to_string());
 
     println!("{}", max_threshold);
     let string = "good bad 34 12";
     let output = extract_integer_strings(string);
 
-
-    let enable_fib:bool = enable_fib.trim().parse().unwrap_or(true);
-    let max_threshold:u128 = max_threshold.trim().parse().unwrap_or(100);
+    let enable_fib: bool = enable_fib.trim().parse().unwrap_or(true);
+    let max_threshold: u128 = max_threshold.trim().parse().unwrap_or(100);
     // Fetching environment variables\
     // let input_enable_fib = env::var("INPUT_ENABLE_FIB").unwrap_or("true".to_string());
     // let max_threshold: u128 = env::var("INPUT_MAX_THRESHOLD")
@@ -51,17 +49,18 @@ async fn main() -> Result<()> {
         let integers = output;
 
         for number in integers {
-            if number < max_threshold {
-                // Handle the Result returned by fibo_calculator
-                if let Err(e) = fibo_calculator(number).await {
+            if number < max_threshold{
+             fibo_calculator(number).await?;
+                // Handle the Result returned by fibo_calculato
                     // eprintln!("Error calculating Fibonacci for {}: {}", number, e);
-                }
             }
         }
     }
+        Ok(())
 
-    Ok(())
-}
+    }
+
+   
 
 // async fn fetch_pr_content(owner: &str, repo: &str,) -> Result<String> {
 //     let token = env::var("GITHUB_TOKEN").context("GITHUB_TOKEN not set")?;
@@ -91,41 +90,53 @@ async fn post_comment(body: String) -> Result<()> {
     let pr_number = env::var("PR_NUMBER").context("PR_NUMBER not set")?;
     let owner = env::var("GITHUB_OWNER").context("GITHUB_OWNER not set")?;
 
-    let url = format!("https://api.github.com/repos/{}/{}/issues/{}/comments",owner, repo, pr_number);
-    client
+    let url = format!(
+        "https://api.github.com/repos/{}/{}/issues/{}/comments",
+        owner, repo, pr_number
+    );
+    let result = client
         .post(&url)
         .bearer_auth(token)
         .header("User-Agent", "USHER-PB")
         .json(&json!({ "body": body }))
         .send()
         .await
-        .context("Failed to post comment")?;  
-
-    Ok(())
-}
-
-
-async fn fibo_calculator(number: u128) -> Result<()> {
-    let mut a: u128 = 0;
-    let mut b: u128 = 1;
-
-    if number == 0 {
-        post_comment(format!("The Fibonacci value of {} is {}", number, a)).await?;
-        println!("the fibonnaci of {} is {}", number,a);
-        return Ok(());
-    }
-
-    for i in 2..=number {
-        let pre_fib = a + b;
-        a = b;
-        b = pre_fib;
-        if i == number {
-            println!("the fibonnaci of {} is {}", number,b);
-            post_comment(format!("The Fibonacci value of {} is {}", number, b)).await?;          
+        .context("Failed to post comment");
+    match result {
+        Ok(_) => {
+            println!("Posted with success")
+        }
+        Err(e) => {
+            eprintln!("Posting did not succeded {}",e);
         }
     }
 
     Ok(())
+}
+
+ async fn fibo_calculator(number: u128) -> Result<u128> {
+    let mut a: u128 = 0;
+    let mut b: u128 = 1;
+
+    if number == 0 {
+        let _ = post_comment(format!("The Fibonacci value of {} is {}", number, a)).await;
+        println!("the fibonnaci of {} is {}", number, a);
+        
+    }
+
+    for i in 2..=number {
+       let pre_fib = a + b;
+        a = b;
+        b = pre_fib;
+        if i == number {
+            println!("the fibonnaci of {} is {}", number, b);
+            let _ = post_comment(format!("The Fibonacci value of {} is {}", number, b)).await;
+        }
+    }
+    Ok(b)
+  
+
+ 
 }
 
 fn extract_integer_strings(input: &str) -> Vec<u128> {
@@ -134,6 +145,4 @@ fn extract_integer_strings(input: &str) -> Vec<u128> {
         .filter(|s| s.chars().all(char::is_numeric)) // Keep only substrings that are all numeric
         .filter_map(|s| s.parse::<u128>().ok()) // Parse to u128 and filter out any parsing errors
         .collect() // Collect the results into a Vec<u128>
-
 }
-
