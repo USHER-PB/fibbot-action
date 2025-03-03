@@ -16,6 +16,11 @@ jobs:
       contents: read
 
     steps:
+
+
+      - name: Install CA Certificates
+        run: sudo apt-get update && sudo apt-get install -y ca-certificates
+        
       - name: Cached Cargo registry and build
         uses: actions/cache@v4
         with:
@@ -35,6 +40,7 @@ jobs:
           echo "GITHUB_TOKEN: $GITHUB_TOKEN"
           echo "GITHUB_OWNER: $GITHUB_OWNER"
            echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
