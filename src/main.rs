@@ -96,7 +96,7 @@ async fn post_comment(body: String) -> Result<()> {
     // println!("Owner: {}", owner);
 
     let url = format!(
-        "https://api.github.com/repos/{}/issues/{}/comments",
+        "https://api.github.com/repos/{}/{}/issues/{}/comments",
          repo, pr_number
     );
 
