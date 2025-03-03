@@ -28,7 +28,13 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-go-
-
+      
+      - name: Debug Environment Variables
+        run: |
+          echo "PR_NUMBER: $PR_NUMBER"
+          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
+          echo "GITHUB_OWNER: $GITHUB_OWNER"
+           echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
       - name: Checkout repository
         uses: actions/checkout@v4
 

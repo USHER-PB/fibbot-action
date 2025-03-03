@@ -93,33 +93,37 @@ async fn post_comment(body: String) -> Result<()> {
     println!("Using token: {}", token);
     println!("Repo: {}", repo);
     println!("PR Number: {}", pr_number);
-   println!("Owner: {}", owner);
+    println!("Owner: {}", owner);
 
     let url = format!(
         "https://api.github.com/repos/{}/{}/issues/{}/comments",
         owner, repo, pr_number
-
     );
-    let result = client
+
+    let response = client
         .post(&url)
         .bearer_auth(token)
         .header("User-Agent", "USHER-PB")
         .json(&json!({ "body": body }))
         .send()
-        .await
-        .context("Failed to post comment");
-    match result {
-        Ok(_) => {
-            println!("Posted with success")
+        .await;
+
+    match response {
+        Ok(res) => {
+            if res.status().is_success() {
+                println!("Comment posted successfully");
+            } else {
+                let error_message = res.text().await.unwrap_or("Failed to read error message".to_string());
+                eprintln!("Failed to post comment: {}", error_message);
+            }
         }
         Err(e) => {
-            eprintln!("Posting did not succeded {}",e);
+            eprintln!("Failed to send request: {}", e);
         }
     }
 
     Ok(())
 }
-
  async fn fibo_calculator(number: u128) -> Result<u128> {
     let mut a: u128 = 0;
     let mut b: u128 = 1;
