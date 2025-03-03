@@ -20,19 +20,15 @@ jobs:
         with:
           toolchain: stable
           override: true
-      - name: Build and run FibBot
+
+      - name: Build , RUN AND COMMENT 
         id: fibbot
         uses: ./
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          enable_fib: "true"
-          max_threshold: "100"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          ENABLE_FIB: "true"
+          MAXIMUM THRESHOLD: "100"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
      
-      - name: Comment PR with Fibonacci result
-        uses: thollander/actions-comment-pull-request@v1
-        with:
-          message: |
-             cargo build --release
-             OUTPUT=$(./target/release/fibbot)
+     
