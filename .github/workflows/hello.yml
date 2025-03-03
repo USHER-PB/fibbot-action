@@ -29,8 +29,7 @@ jobs:
           max_threshold: "100"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and run FibBot
-        id: fibbot
+      - name: Build and run program
         run: |
           cargo build --release
           OUTPUT=$(./target/release/fibbot)
