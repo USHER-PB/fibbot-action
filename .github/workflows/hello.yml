@@ -17,6 +17,8 @@ jobs:
   
       - name: Comment PR 
         uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: "Thank you for your pull request! A FibBot will review it shortly."
 
       - name: Build and run FibBot
         uses: ./
