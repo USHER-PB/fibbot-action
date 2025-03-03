@@ -33,6 +33,8 @@ jobs:
           INPUT_ENABLE_FIB: "true"
           INPUT_MAX_THRESHOLD: "100"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_OWNER: ${{ github.actor.repository }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
      
      

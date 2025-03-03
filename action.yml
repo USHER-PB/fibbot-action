@@ -28,3 +28,5 @@ runs:
   env:
     PR_NUMBER: ${{ inputs.pr_number }}
     GITHUB_TOKEN: ${{ inputs.github_token }}
+    GITHUB_OWNER: ${{inputs.owner}}
+    
