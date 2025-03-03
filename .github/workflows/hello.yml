@@ -16,6 +16,16 @@ jobs:
       contents: read
 
     steps:
+
+      - name: Cached Cargo registry and build
+        uses: actions/cache@v4
+        with:
+          path: |~.cargo/bin/~/.cargo/registry/index/~/.cargo/registry/cache/~.cargo/.git/db/
+           target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |${{ runner.os }}-cargo-
+
+          
       - name: Checkout repository
         uses: actions/checkout@v4
 
