@@ -14,8 +14,26 @@ jobs:
     permissions:
       pull-requests: write
       contents: read
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Auto-generated secret
+      GITHUB_REPOSITORY: ${{ github.repository }}  # Predefined variable
 
     steps:
+      - name: Set PR Number
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+      - name: Set Repository Owner
+        run: |
+          echo "GITHUB_OWNER=${GITHUB_REPOSITORY%/*}" >> $GITHUB_ENV
+
+      - name: Verify Variables
+        run: |
+          echo "PR_NUMBER: ${{ env.PR_NUMBER }}"
+          echo "GITHUB_OWNER: ${{ env.GITHUB_OWNER }}"
+          echo "GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }}"
+          echo "GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}"
 
 
       - name: Install CA Certificates
@@ -61,15 +79,26 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          override: true
+          override: true                               # INPUT_ENABLE_FIB: "true"
+          # INPUT_MAX_THRESHOLD: "100"
 
       - name: Build, RUN AND COMMENT 
         id: fibbot
         uses: ./
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          INPUT_ENABLE_FIB: "true"
-          INPUT_MAX_THRESHOLD: "100"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_OWNER: ${{ github.actor }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+      
+    steps:
+    - name: Set PR Number
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+    - name: Set Repository Owner
+      run: |
+        echo "GITHUB_OWNER=${GITHUB_REPOSITORY%/*}" >> $GITHUB_ENV
+
+    - name: Verify Variables
+      run: |
+        echo "PR_NUMBER: ${{ env.PR_NUMBER }}"
+        echo "GITHUB_OWNER: ${{ env.GITHUB_OWNER }}"
+        echo "GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }}"
+        echo "GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}"
