@@ -17,6 +17,8 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Auto-generated secret
       GITHUB_REPOSITORY: ${{ github.repository }}  # Predefined variable
+      INPUT_MAX_THRESHOLD: "100"
+      
 
     steps:
       - name: Set PR Number
@@ -80,25 +82,10 @@ jobs:
         with:
           toolchain: stable
           override: true                               # INPUT_ENABLE_FIB: "true"
-          # INPUT_MAX_THRESHOLD: "100"
+         
 
       - name: Build, RUN AND COMMENT 
         id: fibbot
         uses: ./
       
-    steps:
-    - name: Set PR Number
-      if: ${{ github.event_name == 'pull_request' }}
-      run: |
-        echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-
-    - name: Set Repository Owner
-      run: |
-        echo "GITHUB_OWNER=${GITHUB_REPOSITORY%/*}" >> $GITHUB_ENV
-
-    - name: Verify Variables
-      run: |
-        echo "PR_NUMBER: ${{ env.PR_NUMBER }}"
-        echo "GITHUB_OWNER: ${{ env.GITHUB_OWNER }}"
-        echo "GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }}"
-        echo "GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}"
+   
