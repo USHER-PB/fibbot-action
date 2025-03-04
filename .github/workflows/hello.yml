@@ -35,7 +35,12 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-go-
-      
+       
+      - name: Debug API Response
+        run: |
+          curl -v -H "Authorization: token $GITHUB_TOKEN" \
+           https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}
+
       - name: Debug Environment Variables
         run: |
           echo "PR_NUMBER: $PR_NUMBER"
@@ -45,6 +50,12 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
+
+
+      - name: Build with Cargo
+        env:
+          SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+        run: cargo build --release
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1

@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use reqwest::Client;
 use serde_json::json;
-use std::{env, fmt::format, fs, u128};
+use std::{env, u128};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -137,7 +137,7 @@ async fn post_comment(body: String) -> Result<()> {
     }
  
 
-    for i in 2..=number {
+    for _ in 2..=number {
        let pre_fib = a + b;
         a = b;
         b = pre_fib;
