@@ -14,8 +14,35 @@ jobs:
     permissions:
       pull-requests: write
       contents: read
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Auto-generated secret
+      GITHUB_REPOSITORY: ${{ github.repository }}  # Predefined variable
+      INPUT_MAX_THRESHOLD: "100"
+      
 
     steps:
+      - name: Set PR Number
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+      - name: Set Repository Owner
+        run: |
+          echo "GITHUB_OWNER=${GITHUB_REPOSITORY%/*}" >> $GITHUB_ENV
+
+      - name: Verify Variables
+        run: |
+          echo "PR_NUMBER: ${{ env.PR_NUMBER }}"
+          echo "GITHUB_OWNER: ${{ env.GITHUB_OWNER }}"
+          echo "GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }}"
+          echo "GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}"
+
+
+      - name: Install CA Certificates
+        run: sudo apt-get update && sudo apt-get install -y ca-certificates
+        
+      - name: Test GitHub API Connectivity
+        run: curl -I https://api.github.com
       - name: Cached Cargo registry and build
         uses: actions/cache@v4
         with:
@@ -28,29 +55,37 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-go-
-      
+       
+      - name: Debug API Response
+        run: |
+          curl -v -H "Authorization: token $GITHUB_TOKEN" \
+           https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}
+
       - name: Debug Environment Variables
         run: |
           echo "PR_NUMBER: $PR_NUMBER"
           echo "GITHUB_TOKEN: $GITHUB_TOKEN"
           echo "GITHUB_OWNER: $GITHUB_OWNER"
            echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
+
       - name: Checkout repository
         uses: actions/checkout@v4
+
+
+      - name: Build with Cargo
+        env:
+          SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+        run: cargo build --release
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          override: true
+          override: true                               # INPUT_ENABLE_FIB: "true"
+         
 
       - name: Build, RUN AND COMMENT 
         id: fibbot
         uses: ./
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          INPUT_ENABLE_FIB: "true"
-          INPUT_MAX_THRESHOLD: "100"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_OWNER: ${{ github.actor }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+      
+   
